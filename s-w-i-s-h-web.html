@@ -1,0 +1,1213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>S.W.I.S.H Web</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --menu-grad: linear-gradient(135deg, #3852f2 0%, #8547eb 52%, #eb5294 100%);
+        --you-grad: linear-gradient(135deg, #22b573, #0ea5a4);
+        --cpu-grad: linear-gradient(135deg, #ff9500, #ff2d55);
+        --bonus-grad: linear-gradient(135deg, #0a84ff, #32ade6);
+        --sel-grad: linear-gradient(135deg, #ff9500, #ff2d55);
+        --bg: #eef2fc;
+        --bg-grad: linear-gradient(180deg, #ffffff 0%, rgba(10, 132, 255, 0.10) 100%);
+        --panel: #ffffff;
+        --ink: #101828;
+        --ink-2: #5b6b82;
+        --line: #d7dee9;
+        --black-cell: #e3e6ee;
+        --letter-cell: #ffffff;
+        --letter-border: #c6d0df;
+        --clue-base: #fff0bd;
+        --clue-grad: linear-gradient(135deg, rgba(255, 214, 10, 0.60), rgba(255, 149, 0, 0.48));
+        --tile-face: linear-gradient(180deg, #ffffff, #e8ebf2);
+        --tile-ink: #101828;
+        --accent: #0a84ff;
+        --danger: #ff3b30;
+        --shadow: 0 10px 30px rgba(16, 24, 40, 0.14);
+        --chip-bg: rgba(16, 24, 40, 0.05);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0a0e1a;
+          --bg-grad: linear-gradient(180deg, #121a2e 0%, #0a0e1a 100%);
+          --panel: #171e30;
+          --ink: #f2f5fb;
+          --ink-2: #9aa7bd;
+          --line: #2a3448;
+          --black-cell: #232b40;
+          --letter-cell: #1a2133;
+          --letter-border: #3b4763;
+          --clue-base: #57430f;
+          --clue-grad: linear-gradient(135deg, rgba(255, 214, 10, 0.42), rgba(255, 149, 0, 0.38));
+          --tile-face: linear-gradient(180deg, #2a3350, #1d2539);
+          --tile-ink: #f2f5fb;
+          --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+          --chip-bg: rgba(255, 255, 255, 0.07);
+        }
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+        -webkit-tap-highlight-color: transparent;
+      }
+      button { font: inherit; color: inherit; }
+      h1, h2, h3, p { margin: 0; }
+      [hidden] { display: none !important; }
+
+      /* ---------- Start screen ---------- */
+      #startScreen {
+        position: fixed; inset: 0; overflow-y: auto;
+        background: var(--menu-grad);
+        color: #fff;
+        display: flex; align-items: center; justify-content: center;
+        padding: 28px 20px calc(28px + env(safe-area-inset-bottom));
+      }
+      .start-inner { width: 100%; max-width: 420px; text-align: center; }
+      .logo {
+        font-size: clamp(52px, 15vw, 76px);
+        font-weight: 900; letter-spacing: 0.04em; line-height: 1;
+        text-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+      }
+      .logo .dot { color: #ffd60a; }
+      .tagline { margin-top: 10px; font-size: 17px; font-weight: 600; color: rgba(255,255,255,0.92); }
+      .mode-line { margin-top: 6px; font-size: 14px; color: rgba(255,255,255,0.75); }
+      .start-card {
+        margin-top: 30px; text-align: left;
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        border-radius: 18px; padding: 18px;
+        backdrop-filter: blur(6px);
+      }
+      .start-card h2 { font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.85); }
+      .diff-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+      .diff-btn {
+        border: 2px solid rgba(255,255,255,0.35); background: rgba(255,255,255,0.10);
+        color: #fff; border-radius: 12px; padding: 10px 4px; cursor: pointer;
+        font-weight: 800; font-size: 16px; text-align: center;
+      }
+      .diff-btn small { display: block; margin-top: 3px; font-weight: 500; font-size: 11px; color: rgba(255,255,255,0.78); }
+      .diff-btn[aria-pressed="true"] { background: #fff; color: #3b2fb8; border-color: #fff; }
+      .diff-btn[aria-pressed="true"] small { color: #6a5f9e; }
+      .howto { margin-top: 16px; font-size: 14px; line-height: 1.55; color: rgba(255,255,255,0.92); }
+      .howto strong { color: #ffd60a; font-weight: 700; }
+      #playBtn {
+        margin-top: 26px; width: 100%;
+        background: #fff; color: #3b2fb8; border: none; border-radius: 999px;
+        padding: 16px 20px; font-size: 20px; font-weight: 900; letter-spacing: 0.02em;
+        cursor: pointer; box-shadow: 0 12px 28px rgba(0,0,0,0.28);
+      }
+      #playBtn:active { transform: scale(0.98); }
+      .fresh-note { margin-top: 14px; font-size: 13px; color: rgba(255,255,255,0.75); }
+
+      /* ---------- Game screen ---------- */
+      #gameScreen {
+        min-height: 100dvh;
+        background: var(--bg-grad);
+        display: flex; flex-direction: column; align-items: center;
+        padding: 12px 12px calc(16px + env(safe-area-inset-bottom));
+      }
+      .game-col { width: 100%; max-width: 460px; display: flex; flex-direction: column; gap: 10px; }
+      .hud-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+      #puzzleTitle { font-size: 20px; font-weight: 800; letter-spacing: 0.01em; }
+      #turnPts {
+        font-size: 13px; font-weight: 700; color: var(--ink-2);
+        background: var(--chip-bg); border-radius: 999px; padding: 4px 10px; white-space: nowrap;
+      }
+      #turnPts b { color: var(--ink); }
+      .scoreboard { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: stretch; }
+      .score {
+        border-radius: 14px; padding: 8px 12px; background: var(--panel);
+        border: 2px solid var(--line);
+        display: flex; flex-direction: column; justify-content: center;
+      }
+      .score .who { font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+      .score .who .swatch { width: 10px; height: 10px; border-radius: 3px; }
+      .score.you .swatch { background: var(--you-grad); }
+      .score.cpu .swatch { background: var(--cpu-grad); }
+      .score .pts { font-size: 30px; font-weight: 900; line-height: 1.05; font-variant-numeric: tabular-nums; }
+      .score.active-you { border-color: #22b573; box-shadow: 0 0 0 3px rgba(34, 181, 115, 0.18); }
+      .score.active-cpu { border-color: #ff9500; box-shadow: 0 0 0 3px rgba(255, 149, 0, 0.20); }
+      .timerbox { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 74px; }
+      #timerNum {
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        font-size: 30px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums;
+      }
+      #timerNum.low { color: var(--danger); }
+      .timerbox .tlabel { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; color: var(--ink-2); text-transform: uppercase; margin-top: 3px; }
+      .timerbar { height: 6px; border-radius: 999px; background: var(--line); overflow: hidden; }
+      #timerFill { height: 100%; width: 100%; border-radius: 999px; background: var(--bonus-grad); transition: width 0.95s linear; }
+      #timerFill.low { background: var(--danger); }
+      #statusLine { min-height: 20px; text-align: center; font-size: 14px; font-weight: 600; color: var(--ink-2); }
+      #statusLine .thinking::after { content: "…"; }
+
+      /* ---------- Board ---------- */
+      #board {
+        display: grid; grid-template-columns: repeat(8, 1fr); gap: 3px;
+        width: 100%; user-select: none; -webkit-user-select: none; touch-action: manipulation;
+      }
+      .cell {
+        aspect-ratio: 1 / 1; border-radius: 5px; position: relative;
+        display: flex; align-items: center; justify-content: center;
+        padding: 0; border: none; background: transparent; overflow: hidden;
+      }
+      .cell.black { background: var(--black-cell); }
+      .cell.clue {
+        background-color: var(--clue-base); background-image: var(--clue-grad);
+        cursor: pointer; flex-direction: column; justify-content: flex-start;
+        padding: 2px; color: var(--ink);
+      }
+      .cell.clue .arrow { font-size: calc(var(--cell, 44px) * 0.26); font-weight: 800; line-height: 1.1; }
+      .cell.clue .ctext {
+        font-size: calc(var(--cell, 44px) * 0.155); line-height: 1.15; font-weight: 600;
+        display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+        word-break: break-word; text-align: center;
+      }
+      .cell.clue.has-pic .arrow { font-size: calc(var(--cell, 44px) * 0.22); }
+      .cell.clue .pic {
+        font-size: calc(var(--cell, 44px) * 0.44); line-height: 1.15;
+        display: block; text-align: center;
+      }
+      .cell.letter { background: var(--letter-cell); border: 1.5px solid var(--letter-border); cursor: pointer; }
+      .cell.letter.bonus { border: 2px solid #0a84ff; background-image: var(--bonus-grad); }
+      #board.has-selection .cell.letter.empty { border-color: var(--accent); }
+      .cell.letter .glyph {
+        font-size: calc(var(--cell, 44px) * 0.52); font-weight: 900; color: #fff;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.25); line-height: 1;
+      }
+      .cell.letter.filled { border-color: transparent; cursor: default; }
+      .cell.letter.filled.by-you { background-image: var(--you-grad); }
+      .cell.letter.filled.by-cpu { background-image: var(--cpu-grad); }
+      .cell.letter .turndot {
+        position: absolute; top: 3px; right: 3px; width: 8px; height: 8px; border-radius: 50%;
+        background: #ffd60a; box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      }
+      @keyframes pop { 0% { transform: scale(0.4); } 60% { transform: scale(1.18); } 100% { transform: scale(1); } }
+      .cell.letter .glyph.pop { animation: pop 0.28s ease-out; }
+
+      /* ---------- Rack & controls ---------- */
+      #rack { display: flex; justify-content: center; gap: 8px; padding: 4px 0 2px; min-height: 62px; }
+      .tile {
+        width: 56px; height: 56px; border-radius: 12px; border: none; cursor: pointer;
+        background: var(--tile-face); color: var(--tile-ink);
+        font-size: 28px; font-weight: 900;
+        box-shadow: 0 3px 8px rgba(16, 24, 40, 0.18), inset 0 0 0 1.5px var(--letter-border);
+        display: flex; align-items: center; justify-content: center;
+        transition: transform 0.12s ease, opacity 0.15s ease;
+      }
+      .tile.selected { background: var(--sel-grad); color: #fff; transform: translateY(-7px); box-shadow: 0 10px 18px rgba(255, 45, 85, 0.35); }
+      .tile.used { opacity: 0.22; pointer-events: none; box-shadow: none; }
+      .tile:disabled { cursor: default; }
+      @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
+      .tile.shake { animation: shake 0.38s ease; }
+      .controls { display: flex; flex-direction: column; gap: 8px; }
+      #endTurnBtn {
+        border: none; border-radius: 999px; padding: 14px; cursor: pointer;
+        background: var(--menu-grad); color: #fff; font-size: 17px; font-weight: 800;
+        box-shadow: 0 8px 20px rgba(80, 60, 220, 0.30);
+      }
+      #endTurnBtn:disabled { opacity: 0.45; cursor: default; box-shadow: none; }
+      .tool-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .tool-btn {
+        border: 1.5px solid var(--line); background: var(--panel); border-radius: 12px;
+        padding: 11px 4px; cursor: pointer; font-weight: 700; font-size: 15px;
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+      }
+      .tool-btn .count {
+        font-size: 12px; font-weight: 800; background: var(--chip-bg); color: var(--ink-2);
+        border-radius: 999px; padding: 2px 7px;
+      }
+      .tool-btn:disabled { opacity: 0.4; cursor: default; }
+
+      /* ---------- Toast ---------- */
+      #toastWrap {
+        position: fixed; top: calc(12px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%);
+        z-index: 60; display: flex; flex-direction: column; align-items: center; gap: 6px;
+        pointer-events: none; width: max-content; max-width: 92vw;
+      }
+      .toast {
+        background: #101828; color: #fff; font-weight: 700; font-size: 15px;
+        padding: 10px 18px; border-radius: 999px; box-shadow: var(--shadow);
+        animation: toast-in 0.22s ease-out; text-align: center;
+      }
+      @media (prefers-color-scheme: dark) { .toast { background: #f2f5fb; color: #101828; } }
+      @keyframes toast-in { from { opacity: 0; transform: translateY(-8px) scale(0.96); } to { opacity: 1; transform: none; } }
+
+      /* ---------- Modals ---------- */
+      .modal-backdrop {
+        position: fixed; inset: 0; z-index: 50; background: rgba(8, 10, 20, 0.55);
+        display: flex; align-items: center; justify-content: center; padding: 20px;
+      }
+      .modal {
+        background: var(--panel); color: var(--ink); border-radius: 20px; box-shadow: var(--shadow);
+        width: 100%; max-width: 380px; padding: 24px; text-align: center;
+      }
+      .modal h2 { font-size: 24px; font-weight: 900; }
+      .modal .clue-lines { margin-top: 12px; text-align: left; font-size: 17px; line-height: 1.5; white-space: pre-line; }
+      .modal .final-score { margin-top: 8px; font-size: 44px; font-weight: 900; font-variant-numeric: tabular-nums; }
+      .modal .final-score .sep { color: var(--ink-2); margin: 0 6px; }
+      .stat-table { margin: 18px 0 4px; width: 100%; border-collapse: collapse; font-size: 15px; }
+      .stat-table th, .stat-table td { padding: 8px 6px; }
+      .stat-table thead th { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-2); border-bottom: 1.5px solid var(--line); }
+      .stat-table tbody th { text-align: left; font-weight: 600; color: var(--ink-2); }
+      .stat-table tbody td { font-weight: 800; font-variant-numeric: tabular-nums; }
+      .modal .btn-primary {
+        margin-top: 18px; width: 100%; border: none; border-radius: 999px; padding: 14px;
+        background: var(--menu-grad); color: #fff; font-size: 17px; font-weight: 800; cursor: pointer;
+      }
+      .modal .btn-ghost {
+        margin-top: 10px; width: 100%; border: none; background: transparent; color: var(--ink-2);
+        font-size: 15px; font-weight: 700; padding: 8px; cursor: pointer;
+      }
+      .winner-you { color: #0d9d63; }
+      .winner-cpu { color: #e8590c; }
+
+      @media (prefers-reduced-motion: reduce) {
+        .cell.letter .glyph.pop, .tile.shake, .toast { animation: none; }
+        #timerFill { transition: none; }
+        .tile { transition: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ================= Start screen ================= -->
+    <section id="startScreen">
+      <div class="start-inner">
+        <h1 class="logo">S<span class="dot">.</span>W<span class="dot">.</span>I<span class="dot">.</span>S<span class="dot">.</span>H</h1>
+        <p class="tagline">Solve Words. Intercept. Score High.</p>
+        <p class="mode-line">Solo vs CPU &middot; a brand-new arrowword every game</p>
+
+        <div class="start-card">
+          <h2>CPU difficulty</h2>
+          <div class="diff-row" role="group" aria-label="CPU difficulty">
+            <button type="button" class="diff-btn" data-diff="easy" aria-pressed="false">Easy<small>relaxed CPU</small></button>
+            <button type="button" class="diff-btn" data-diff="normal" aria-pressed="true">Normal<small>a fair fight</small></button>
+            <button type="button" class="diff-btn" data-diff="hard" aria-pressed="false">Hard<small>sharp CPU</small></button>
+          </div>
+          <p class="howto">
+            You and the CPU share one arrowword grid. Each turn you get
+            <strong>5 letter tiles</strong> and <strong>60 seconds</strong>: tap a tile,
+            then tap a square. Right letter scores <strong>+1</strong>; finishing a word
+            pays its length in bonus points. Use all 5 tiles for <strong>+5</strong>, and
+            landing on a <strong>blue square</strong> doubles your whole turn.
+          </p>
+        </div>
+
+        <button type="button" id="playBtn">Play</button>
+        <p class="fresh-note" id="freshNote">Building your first puzzle&hellip;</p>
+      </div>
+    </section>
+
+    <!-- ================= Game screen ================= -->
+    <main id="gameScreen" hidden>
+      <div class="game-col">
+        <div class="hud-top">
+          <h2 id="puzzleTitle">Puzzle</h2>
+          <span id="turnPts">Turn <b>+0</b></span>
+        </div>
+
+        <div class="scoreboard">
+          <div class="score you" id="scoreYou">
+            <span class="who"><span class="swatch"></span>You</span>
+            <span class="pts" id="ptsYou">0</span>
+          </div>
+          <div class="timerbox">
+            <span id="timerNum">60</span>
+            <span class="tlabel">seconds</span>
+          </div>
+          <div class="score cpu" id="scoreCpu">
+            <span class="who"><span class="swatch"></span>CPU</span>
+            <span class="pts" id="ptsCpu">0</span>
+          </div>
+        </div>
+        <div class="timerbar"><div id="timerFill"></div></div>
+
+        <p id="statusLine" aria-live="polite">Your turn</p>
+
+        <div id="board" role="grid" aria-label="Arrowword board"></div>
+
+        <div id="rack" aria-label="Your letter tiles"></div>
+
+        <div class="controls">
+          <button type="button" id="endTurnBtn">End Turn</button>
+          <div class="tool-row">
+            <button type="button" class="tool-btn" id="undoBtn">Undo</button>
+            <button type="button" class="tool-btn" id="swapBtn">Swap <span class="count" id="swapCount">2</span></button>
+            <button type="button" class="tool-btn" id="hintBtn">Hint <span class="count" id="hintCount">3</span></button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div id="toastWrap" aria-hidden="true"></div>
+
+    <!-- ================= Clue popup ================= -->
+    <div class="modal-backdrop" id="clueModal" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="clueModalTitle">
+        <h2 id="clueModalTitle">Clue</h2>
+        <p class="clue-lines" id="clueModalText"></p>
+        <button type="button" class="btn-primary" id="clueCloseBtn">Got it</button>
+      </div>
+    </div>
+
+    <!-- ================= Game over ================= -->
+    <div class="modal-backdrop" id="overModal" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="overTitle">
+        <h2 id="overTitle">Game over</h2>
+        <p class="final-score"><span id="finalYou">0</span><span class="sep">&ndash;</span><span id="finalCpu">0</span></p>
+        <table class="stat-table">
+          <thead>
+            <tr><th scope="col"></th><th scope="col">You</th><th scope="col">CPU</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Words completed</th><td id="statWordsYou">0</td><td id="statWordsCpu">0</td></tr>
+            <tr><th scope="row">Letters placed</th><td id="statLettersYou">0</td><td id="statLettersCpu">0</td></tr>
+          </tbody>
+        </table>
+        <button type="button" class="btn-primary" id="playAgainBtn">Play Again</button>
+        <button type="button" class="btn-ghost" id="menuBtn">Change difficulty</button>
+      </div>
+    </div>
+
+    <script>
+      "use strict";
+
+      /* ================= Data (ported from the S.W.I.S.H iOS app) ================= */
+      const WORDS = [{"w":"ANT","c":"Tiny picnic crasher"},{"w":"APE","c":"Jungle swinger"},{"w":"ASH","c":"Fireplace remains"},{"w":"BAT","c":"Cave flier"},{"w":"BEE","c":"Honey maker"},{"w":"BOW","c":"Tied ribbon"},{"w":"BOX","c":"Parcel"},{"w":"BUS","c":"City transport"},{"w":"CAB","c":"Street taxi"},{"w":"CAN","c":"Aluminum container"},{"w":"CAP","c":"Bottle topper"},{"w":"CAR","c":"Road runner"},{"w":"CAT","c":"Purring pet"},{"w":"COW","c":"Moo source"},{"w":"CUP","c":"Coffee holder"},{"w":"DOG","c":"Loyal barker"},{"w":"DOT","c":"Sentence ender"},{"w":"EGG","c":"Omelet start"},{"w":"ELM","c":"Shade tree"},{"w":"FAN","c":"Breeze maker"},{"w":"FOG","c":"Pea-soup air"},{"w":"FOX","c":"Sly critter"},{"w":"GAS","c":"Pump purchase"},{"w":"HAT","c":"Head topper"},{"w":"HAY","c":"Barn feed"},{"w":"HEN","c":"Egg layer"},{"w":"ICE","c":"Skating surface"},{"w":"INK","c":"Pen fluid"},{"w":"JAR","c":"Preserve holder"},{"w":"KEY","c":"Lock mate"},{"w":"KITE","c":"Wind rider"},{"w":"LOG","c":"Campfire fuel"},{"w":"MAP","c":"Lost driver's aid"},{"w":"MUD","c":"Rainy-day mess"},{"w":"NAP","c":"Couch snooze"},{"w":"NET","c":"Goal mesh"},{"w":"OAR","c":"Canoe pusher"},{"w":"OIL","c":"Squeak stopper"},{"w":"OWL","c":"Wise night bird"},{"w":"PAN","c":"Sizzle maker"},{"w":"PEN","c":"Ink writer"},{"w":"PIE","c":"A la mode treat"},{"w":"PIG","c":"Muddy oinker"},{"w":"POT","c":"Stew vessel"},{"w":"RAT","c":"Alley scurrier"},{"w":"ROD","c":"Fishing pole"},{"w":"RUG","c":"Floor cover"},{"w":"SAW","c":"Carpenter's tool"},{"w":"SKI","c":"Snow slider"},{"w":"SOAP","c":"Bubble maker"},{"w":"SOCK","c":"Foot warmer"},{"w":"SUN","c":"Daytime star"},{"w":"TEA","c":"Steeped drink"},{"w":"TENT","c":"Camp shelter"},{"w":"TIE","c":"Neckwear"},{"w":"TIN","c":"Can metal"},{"w":"VAN","c":"Band vehicle"},{"w":"VASE","c":"Flower holder"},{"w":"WAX","c":"Candle stuff"},{"w":"WEB","c":"Spider home"},{"w":"YARN","c":"Knitter's supply"},{"w":"ANCHOR","c":"Ship stopper"},{"w":"APPLE","c":"Orchard fruit"},{"w":"ARROW","c":"Bow projectile"},{"w":"AVOCADO","c":"Guacamole fruit"},{"w":"BADGE","c":"Scout's award"},{"w":"BALL","c":"Catch toy"},{"w":"BARN","c":"Hay hotel"},{"w":"BEACH","c":"Sandy shore"},{"w":"BEARD","c":"Chin curtain"},{"w":"BELL","c":"Chime"},{"w":"BIRD","c":"Feathered flier"},{"w":"BOAT","c":"Water ride"},{"w":"BREAD","c":"Sandwich base"},{"w":"BRICK","c":"Wall block"},{"w":"BRIDGE","c":"River crosser"},{"w":"BRUSH","c":"Paint applier"},{"w":"CABLE","c":"Wire bundle"},{"w":"CACTUS","c":"Spiky desert plant"},{"w":"CAKE","c":"Birthday treat"},{"w":"CANDLE","c":"Wax light"},{"w":"CASTLE","c":"Royal fortress"},{"w":"CHAIR","c":"Seat"},{"w":"CHEESE","c":"Pizza topping"},{"w":"CHERRY","c":"Sundae topper"},{"w":"CHESS","c":"Board battle"},{"w":"CLOCK","c":"Time teller"},{"w":"CLOUD","c":"Sky puff"},{"w":"COAST","c":"Shore"},{"w":"COMET","c":"Tailed traveler"},{"w":"CORAL","c":"Reef builder"},{"w":"CRAYON","c":"Wax color stick"},{"w":"DANCE","c":"Rhythm move"},{"w":"DESERT","c":"Sandy expanse"},{"w":"DICE","c":"Cube rollers"},{"w":"DIVER","c":"Deep explorer"},{"w":"DOOR","c":"Room entry"},{"w":"DRUM","c":"Beat keeper"},{"w":"EAGLE","c":"Soaring hunter"},{"w":"ENGINE","c":"Motor"},{"w":"FENCE","c":"Yard border"},{"w":"FLAME","c":"Fire tongue"},{"w":"FROST","c":"Window ice"},{"w":"GARAGE","c":"Car bedroom"},{"w":"GARDEN","c":"Flower plot"},{"w":"GHOST","c":"Spooky spirit"},{"w":"GLASS","c":"Window pane"},{"w":"GLOVE","c":"Hand warmer"},{"w":"GRAPE","c":"Wine fruit"},{"w":"HEART","c":"Love symbol"},{"w":"HONEY","c":"Bee gold"},{"w":"HORSE","c":"Gallop animal"},{"w":"HOTEL","c":"Traveler lodging"},{"w":"IGLOO","c":"Ice house"},{"w":"ISLAND","c":"Ocean dot"},{"w":"JACKET","c":"Cool-day wear"},{"w":"JUNGLE","c":"Dense wilds"},{"w":"KAYAK","c":"Paddle craft"},{"w":"KOALA","c":"Eucalyptus muncher"},{"w":"LADDER","c":"Climb aid"},{"w":"LAMP","c":"Desk light"},{"w":"LEMON","c":"Sour citrus"},{"w":"LIGHT","c":"Bulb output"},{"w":"LION","c":"Jungle king"},{"w":"MAGNET","c":"Fridge sticker holder"},{"w":"MANGO","c":"Tropical treat"},{"w":"MARBLE","c":"Glass shooter"},{"w":"MASK","c":"Costume cover"},{"w":"MEDAL","c":"Winner's prize"},{"w":"MIRROR","c":"Reflection glass"},{"w":"MOON","c":"Night light"},{"w":"MUSEUM","c":"Artifact hall"},{"w":"NAPKIN","c":"Lap cloth"},{"w":"NIGHT","c":"Day's opposite"},{"w":"NOVEL","c":"Long story"},{"w":"OCEAN","c":"Vast water"},{"w":"ONION","c":"Tearjerker veggie"},{"w":"ORANGE","c":"Citrus color fruit"},{"w":"ORCHID","c":"Fancy bloom"},{"w":"OVEN","c":"Baking box"},{"w":"PAINT","c":"Wall color"},{"w":"PANDA","c":"Bamboo muncher"},{"w":"PAPER","c":"Write sheet"},{"w":"PARROT","c":"Talking bird"},{"w":"PASTA","c":"Italian dinner"},{"w":"PEACH","c":"Fuzzy fruit"},{"w":"PEARL","c":"Oyster gem"},{"w":"PENCIL","c":"Wooden writer"},{"w":"PHOTO","c":"Snapshot"},{"w":"PIANO","c":"Keyed instrument"},{"w":"PILLOW","c":"Head rest"},{"w":"PIRATE","c":"Treasure hunter"},{"w":"PIZZA","c":"Cheesy pie"},{"w":"PLANT","c":"Green grower"},{"w":"PLATE","c":"Dinner disc"},{"w":"POCKET","c":"Jean holder"},{"w":"PORCH","c":"House stoop"},{"w":"PUDDLE","c":"Rain pool"},{"w":"PUPPY","c":"Young dog"},{"w":"QUILT","c":"Patchwork blanket"},{"w":"RADIO","c":"Airwave box"},{"w":"RAINBOW","c":"Sky arc"},{"w":"RIVER","c":"Flowing water"},{"w":"ROBOT","c":"Metal helper"},{"w":"ROCKET","c":"Space launcher"},{"w":"SADDLE","c":"Horse seat"},{"w":"SATURN","c":"Ringed planet"},{"w":"SCARF","c":"Neck warmer"},{"w":"SHELL","c":"Beach find"},{"w":"SHOVEL","c":"Dig tool"},{"w":"SNAKE","c":"Slithering reptile"},{"w":"SNOWMAN","c":"Winter figure"},{"w":"SOCCER","c":"Goal sport"},{"w":"SPIDER","c":"Eight-legged weaver"},{"w":"SPOON","c":"Soup scoop"},{"w":"STAMP","c":"Mail sticker"},{"w":"STATUE","c":"Stone figure"},{"w":"STORM","c":"Wild weather"},{"w":"STREAM","c":"Babbling water"},{"w":"SUBWAY","c":"Underground train"},{"w":"SUGAR","c":"Sweet crystals"},{"w":"SWING","c":"Playground glider"},{"w":"SWORD","c":"Knight's blade"},{"w":"TABLE","c":"Dinner platform"},{"w":"TACO","c":"Folded feast"},{"w":"TIGER","c":"Striped hunter"},{"w":"TOAST","c":"Browned bread"},{"w":"TORNADO","c":"Twisting terror"},{"w":"TOWER","c":"Tall structure"},{"w":"TRAIN","c":"Rail rider"},{"w":"TRUCK","c":"Hauling vehicle"},{"w":"TRUMPET","c":"Brass blaster"},{"w":"TUNNEL","c":"Underground passage"},{"w":"TURTLE","c":"Slow shell-wearer"},{"w":"UNICORN","c":"Horned myth"},{"w":"VOLCANO","c":"Lava mountain"},{"w":"WALLET","c":"Cash keeper"},{"w":"WATCH","c":"Wrist timepiece"},{"w":"WHALE","c":"Giant swimmer"},{"w":"WINDOW","c":"Wall viewer"},{"w":"WIZARD","c":"Spell caster"},{"w":"ZEBRA","c":"Striped equine"},{"w":"ALARM","c":"Wake-up ringer"},{"w":"ARCADE","c":"Game hall"},{"w":"ATLAS","c":"Map book"},{"w":"BALLOON","c":"Party floater"},{"w":"BANANA","c":"Peel fruit"},{"w":"BANJO","c":"Twangy strings"},{"w":"BASKET","c":"Hoop holder"},{"w":"BEACON","c":"Signal light"},{"w":"BEAVER","c":"Dam builder"},{"w":"BICYCLE","c":"Two-wheeler"},{"w":"BLANKET","c":"Cozy cover"},{"w":"BREEZE","c":"Gentle wind"},{"w":"CAMEL","c":"Desert humped walker"},{"w":"CAMERA","c":"Photo taker"},{"w":"CANYON","c":"Deep gorge"},{"w":"CARPET","c":"Floor fabric"},{"w":"CARROT","c":"Orange veggie"},{"w":"CHALK","c":"Blackboard writer"},{"w":"CHEETAH","c":"Speedy cat"},{"w":"CHIME","c":"Gentle bell"},{"w":"CIRCUS","c":"Big-top show"},{"w":"CLOVER","c":"Lucky leaf"},{"w":"COBRA","c":"Hooded snake"},{"w":"COMPASS","c":"Direction finder"},{"w":"COUGAR","c":"Mountain cat"},{"w":"CRANE","c":"Construction lifter"},{"w":"CRATER","c":"Moon dent"},{"w":"CRICKET","c":"Chirping hopper"},{"w":"DAGGER","c":"Short blade"},{"w":"DAISY","c":"Cheerful bloom"},{"w":"DELTA","c":"River mouth"},{"w":"DIARY","c":"Secret keeper"},{"w":"DINGO","c":"Wild Aussie dog"},{"w":"DIVING","c":"Pool plunge"},{"w":"DONUT","c":"Glazed ring"},{"w":"DRAGON","c":"Fire breather"},{"w":"EASEL","c":"Artist stand"},{"w":"EMBER","c":"Glowing coal"},{"w":"FABLE","c":"Moral story"},{"w":"FERRY","c":"Harbor crosser"},{"w":"FIDDLE","c":"Folk violin"},{"w":"FOREST","c":"Tree crowd"},{"w":"FOSSIL","c":"Ancient remains"},{"w":"FROSTY","c":"Winter's nickname"},{"w":"GECKO","c":"Wall-climbing lizard"},{"w":"GEYSER","c":"Erupting spring"},{"w":"GIRAFFE","c":"Tall spotty browser"},{"w":"GLACIER","c":"Ice river"},{"w":"GLOBE","c":"Round map"},{"w":"GOBLIN","c":"Mischievous imp"},{"w":"GRAVITY","c":"What goes up bringer-downer"},{"w":"GUITAR","c":"Six-string strummer"},{"w":"HARBOR","c":"Ship haven"},{"w":"HATCHET","c":"Small axe"},{"w":"HEATER","c":"Cold chaser"},{"w":"HELMET","c":"Head guard"},{"w":"HERMIT","c":"Crab or loner"},{"w":"HIKING","c":"Trail trekking"},{"w":"HIPPO","c":"River horse"},{"w":"HURDLE","c":"Track jumper"},{"w":"IVORY","c":"Tusk material"},{"w":"JELLY","c":"Wobbly spread"},{"w":"JOKER","c":"Wild card"},{"w":"KARATE","c":"Bare-hand art"},{"w":"KETCHUP","c":"Fry dip"},{"w":"KITTY","c":"Young cat"},{"w":"LAGOON","c":"Shallow bay"},{"w":"LANTERN","c":"Portable glow"},{"w":"LAPTOP","c":"Portable computer"},{"w":"LASER","c":"Focused beam"},{"w":"LLAMA","c":"Andean pack animal"},{"w":"LOCUST","c":"Swarming hopper"},{"w":"LOGIC","c":"Sound reasoning"},{"w":"LUGGAGE","c":"Travel bags"},{"w":"LUNAR","c":"Moon-related"},{"w":"MAGIC","c":"Sleight of hand"},{"w":"MAMMOTH","c":"Ice-age giant"},{"w":"MANTIS","c":"Praying predator"},{"w":"MAPLE","c":"Syrup tree"},{"w":"MELON","c":"Summer fruit"},{"w":"METEOR","c":"Shooting star"},{"w":"MOBILE","c":"Hanging art"},{"w":"MONKEY","c":"Barrel dweller"},{"w":"MOSQUE","c":"Minaret house of worship"},{"w":"MOTEL","c":"Roadside rest"},{"w":"MOUSE","c":"Cheese nibbler"},{"w":"MUFFIN","c":"Baked cup"},{"w":"MUMMY","c":"Wrapped ancient"},{"w":"MURAL","c":"Wall art"},{"w":"NACHO","c":"Cheesy chip"},{"w":"NEBULA","c":"Star nursery"},{"w":"NINJA","c":"Shadow warrior"},{"w":"OASIS","c":"Desert watering hole"},{"w":"OCTOPUS","c":"Eight-armed escape artist"},{"w":"OLIVE","c":"Martini garnish"},{"w":"OPERA","c":"Grand singing drama"},{"w":"ORBIT","c":"Satellite path"},{"w":"ORCHARD","c":"Fruit tree farm"},{"w":"OTTER","c":"Playful river mammal"},{"w":"OXCART","c":"Beast-drawn wagon"},{"w":"OXYGEN","c":"Breath of life"},{"w":"PADDLE","c":"Canoe driver"},{"w":"PALACE","c":"Royal residence"},{"w":"PANEL","c":"Flat section"},{"w":"PAPAYA","c":"Tropical melon"},{"w":"PARADE","c":"Marching celebration"},{"w":"PASTRY","c":"Flaky treat"},{"w":"PATCH","c":"Mended spot"},{"w":"PEBBLE","c":"Tiny stone"},{"w":"PELICAN","c":"Pouch-beaked diver"},{"w":"PENGUIN","c":"Tuxedo waddler"},{"w":"PETAL","c":"Flower piece"},{"w":"PHARAOH","c":"Egyptian king"},{"w":"PICKLE","c":"Briny cucumber"},{"w":"PICNIC","c":"Outdoor feast"},{"w":"PISTON","c":"Engine pumper"},{"w":"PLANK","c":"Walk it, pirate"},{"w":"PLAZA","c":"Open square"},{"w":"PODIUM","c":"Winner's stand"},{"w":"POETRY","c":"Rhyming art"},{"w":"POLAR","c":"Arctic kind"},{"w":"PONCHO","c":"Rain cape"},{"w":"POPCORN","c":"Movie muncher"},{"w":"POSTER","c":"Wall decoration"},{"w":"POTATO","c":"Spud"},{"w":"POULTRY","c":"Farm birds"},{"w":"PRAIRIE","c":"Grassland sea"},{"w":"PRISM","c":"Light splitter"},{"w":"PUPPET","c":"String performer"},{"w":"PUZZLE","c":"Brain teaser"},{"w":"PYTHON","c":"Big constrictor"},{"w":"QUARTZ","c":"Crystal common"},{"w":"QUEUE","c":"Waiting line"},{"w":"RABBIT","c":"Hopping burrower"},{"w":"RACCOON","c":"Masked bandit"},{"w":"RADAR","c":"Blip detector"},{"w":"RAFTING","c":"Rapid rider"},{"w":"RANCH","c":"Cattle spread"},{"w":"RAVEN","c":"Clever black bird"},{"w":"RECIPE","c":"Cook's guide"},{"w":"RELAY","c":"Baton race"},{"w":"RHINO","c":"Horned tank"},{"w":"RIDDLE","c":"Puzzling question"},{"w":"ROAST","c":"Oven-browned meat"},{"w":"ROBIN","c":"Red-breasted singer"},{"w":"RODEO","c":"Bronco show"},{"w":"ROOSTER","c":"Dawn crower"},{"w":"ROUTE","c":"Planned path"},{"w":"ROWBOAT","c":"Oar-powered craft"},{"w":"RULER","c":"Straight measurer"},{"w":"SAFARI","c":"Wildlife expedition"},{"w":"SALAD","c":"Leafy bowl"},{"w":"SALMON","c":"Upstream swimmer"},{"w":"SAUCER","c":"Cup's companion"},{"w":"SCHOOL","c":"Learning place"},{"w":"SCOOTER","c":"Kick-and-glide ride"},{"w":"SCUBA","c":"Deep dive gear"},{"w":"SEAGULL","c":"Beach scavenger"},{"w":"SEASON","c":"Quarter of the year"},{"w":"SENTRY","c":"Watchful guard"},{"w":"SERVER","c":"Data waiter"},{"w":"SHADOW","c":"Sun blocker"},{"w":"SHARK","c":"Ocean's jaws"},{"w":"SHIELD","c":"Defender's plate"},{"w":"SHRIMP","c":"Tiny cocktail"},{"w":"SIESTA","c":"Midday snooze"},{"w":"SIGNAL","c":"Attention getter"},{"w":"SILVER","c":"Second-place metal"},{"w":"SINGER","c":"Melody maker"},{"w":"SKATING","c":"Blade gliding"},{"w":"SKETCH","c":"Rough drawing"},{"w":"SKIER","c":"Slope slider"},{"w":"SKULL","c":"Head bone"},{"w":"SKUNK","c":"Stinky sprayer"},{"w":"SLEDGE","c":"Heavy hammer"},{"w":"SLEEPER","c":"Train berth"},{"w":"SLOTH","c":"Slowpoke mammal"},{"w":"SMOKE","c":"Fire's breath"},{"w":"SNAIL","c":"Slow shell carrier"},{"w":"SNORKEL","c":"Surface breather"},{"w":"SODA","c":"Fizzy drink"},{"w":"SOLAR","c":"Sun-powered"},{"w":"SONAR","c":"Underwater ears"},{"w":"SPARROW","c":"Common chirper"},{"w":"SPHINX","c":"Riddling statue"},{"w":"SPONGE","c":"Soak-up square"},{"w":"SPORTS","c":"Game time"},{"w":"SPRING","c":"Bounce season"},{"w":"SQUID","c":"Ten-armed swimmer"},{"w":"STABLE","c":"Horse home"},{"w":"STADIUM","c":"Fan arena"},{"w":"STAGE","c":"Performer platform"},{"w":"STAIRS","c":"Step climber"},{"w":"STAPLER","c":"Paper pincher"},{"w":"STARTLE","c":"Surprise jump"},{"w":"STEAM","c":"Boiling breath"},{"w":"STEEL","c":"Strong alloy"},{"w":"STENCIL","c":"Pattern tracer"},{"w":"STEREO","c":"Surround sound"},{"w":"STICKER","c":"Peel-and-place"},{"w":"STINGER","c":"Bee's business end"},{"w":"STITCH","c":"Sewing loop"},{"w":"STONE","c":"Rock solid"},{"w":"STOOL","c":"Backless seat"},{"w":"STORAGE","c":"Keep-it place"},{"w":"STOVE","c":"Cooktop"},{"w":"STREET","c":"Paved path"},{"w":"STRETCH","c":"Limber move"},{"w":"STRIPES","c":"Tiger's marks"},{"w":"STUDENT","c":"Learner"},{"w":"STUDIO","c":"Creative space"},{"w":"STUMP","c":"Tree leftover"},{"w":"SUNDAE","c":"Scoop celebration"},{"w":"SUNRISE","c":"Daybreak"},{"w":"SUNSET","c":"Dusk show"},{"w":"SURFER","c":"Wave rider"},{"w":"SUSHI","c":"Raw artistry"},{"w":"SWAMP","c":"Mucky wetland"},{"w":"SWAN","c":"Graceful glider"},{"w":"SWEATER","c":"Cozy knit"},{"w":"ACROBAT","c":"Flipping performer"},{"w":"ACTION","c":"Movie excitement"},{"w":"ADOBE","c":"Sun-dried brick"},{"w":"AGATE","c":"Banded gemstone"},{"w":"ALMOND","c":"Nutty snack"},{"w":"AMBER","c":"Fossilized resin"},{"w":"ANGEL","c":"Halo wearer"},{"w":"ANTHEM","c":"Song of pride"},{"w":"APRICOT","c":"Golden stone fruit"},{"w":"ARCHER","c":"Bow master"},{"w":"ARMORY","c":"Weapon store"},{"w":"ATTIC","c":"Top-floor storage"},{"w":"AUTHOR","c":"Book writer"},{"w":"AUTUMN","c":"Falling-leaf season"},{"w":"AWNING","c":"Shade flap"},{"w":"BADGER","c":"Burrowing mammal"},{"w":"BAGEL","c":"Hole-y breakfast"},{"w":"BALCONY","c":"Railing outlook"},{"w":"BANNER","c":"Waving sign"},{"w":"BARREL","c":"Wooden cask"},{"w":"BATTERY","c":"Power cell"},{"w":"BEETLE","c":"Armored bug"},{"w":"BELUGA","c":"White whale"},{"w":"BISHOP","c":"Diagonal mover"},{"w":"BITTER","c":"Unsweet taste"},{"w":"BLAZER","c":"Sporty jacket"},{"w":"BLENDER","c":"Smoothie maker"},{"w":"BLOSSOM","c":"Flower burst"},{"w":"BONFIRE","c":"Big blaze"},{"w":"BONNET","c":"Old-fashioned hat"},{"w":"BOOKLET","c":"Small book"},{"w":"BORDER","c":"Boundary line"},{"w":"BOTTLE","c":"Drink holder"},{"w":"BOULDER","c":"Big rock"},{"w":"BOUQUET","c":"Flower bunch"},{"w":"BOWLING","c":"Pin toppler"},{"w":"BRANCH","c":"Tree arm"},{"w":"BRANDY","c":"Aged spirit"},{"w":"BRASS","c":"Trumpet metal"},{"w":"BRIDAL","c":"Wedding-related"},{"w":"BRONZE","c":"Third-place metal"},{"w":"BUBBLE","c":"Soapy sphere"},{"w":"BUCKET","c":"Water pail"},{"w":"BUDGET","c":"Spending plan"},{"w":"BUFFALO","c":"Plains grazer"},{"w":"BUILDER","c":"Construction pro"},{"w":"BUNGEE","c":"Cord jumper"},{"w":"BUNKER","c":"Golf sand trap"},{"w":"BURGER","c":"Grilled patty"},{"w":"BURROW","c":"Underground home"},{"w":"BUTTER","c":"Toast spread"},{"w":"BUTTON","c":"Shirt fastener"},{"w":"CABIN","c":"Woods retreat"},{"w":"CADDIE","c":"Golf helper"},{"w":"CAMPUS","c":"College grounds"},{"w":"CANARY","c":"Yellow songbird"},{"w":"CANOES","c":"Paddled boats"},{"w":"CARBON","c":"Diamond element"},{"w":"CARTON","c":"Milk box"},{"w":"CARVE","c":"Whittle"},{"w":"CATTLE","c":"Moo herd"},{"w":"CAVERN","c":"Big cave"},{"w":"CELERY","c":"Crunchy stalk"},{"w":"CELLAR","c":"Underground storage"},{"w":"CEREAL","c":"Morning bowl"},{"w":"CHAIN","c":"Linked metal"},{"w":"CHALET","c":"Alpine lodge"},{"w":"CHAPEL","c":"Small church"},{"w":"CHARGE","c":"Power up"},{"w":"CHARIOT","c":"Horse-drawn racer"},{"w":"CHICKEN","c":"Clucking bird"},{"w":"CHIMNEY","c":"Smoke stack"},{"w":"CHISEL","c":"Carving tool"},{"w":"CIRCLE","c":"Round shape"},{"w":"CITADEL","c":"Fortress"},{"w":"PLANET","c":"Orbiting world"}];
+
+      /* Picture clues: word -> emoji. Ported from PictureClues.swift in the
+         iOS app, which maps each word to an SF Symbol; each symbol is
+         replaced here by its obvious emoji equivalent (alarm -> ⏰,
+         cat -> 🐱, pizza -> 🍕, ...). Words not listed keep text clues. */
+      const PICTURE_EMOJI = {
+        "ALARM": "⏰", "ANCHOR": "⚓", "ANT": "🐜", "APE": "🦍",
+        "APPLE": "🍎", "ATLAS": "📖", "AVOCADO": "🥑", "BADGER": "🦡",
+        "BALLOON": "🎈", "BANANA": "🍌", "BASKET": "🧺", "BAT": "🦇",
+        "BATTERY": "🔋", "BEACH": "🏖️", "BEAVER": "🦫", "BEE": "🐝",
+        "BELL": "🔔", "BICYCLE": "🚲", "BIRD": "🐦", "BRIDGE": "🌉",
+        "BUS": "🚌", "CAKE": "🎂", "CAMEL": "🐪", "CAMERA": "📷",
+        "CAR": "🚗", "CARROT": "🥕", "CASTLE": "🏰", "CAT": "🐱",
+        "CHERRY": "🍒", "CHICKEN": "🐔", "CLOCK": "🕐", "CLOUD": "☁️",
+        "COMPASS": "🧭", "COW": "🐮", "DICE": "🎲", "DOG": "🐶",
+        "DRUM": "🥁", "EAGLE": "🦅", "FOX": "🦊", "GIRAFFE": "🦒",
+        "GLOBE": "🌍", "GUITAR": "🎸", "HEART": "❤️", "HORSE": "🐴",
+        "KEY": "🔑", "KOALA": "🐨", "LAPTOP": "💻", "LEMON": "🍋",
+        "LION": "🦁", "MAP": "🗺️", "MEDAL": "🏅", "MONKEY": "🐵",
+        "MOON": "🌙", "MOUSE": "🐭", "OCTOPUS": "🐙", "OTTER": "🦦",
+        "OWL": "🦉", "PANDA": "🐼", "PARROT": "🦜", "PEACH": "🍑",
+        "PENCIL": "✏️", "PENGUIN": "🐧", "PIANO": "🎹", "PIG": "🐷",
+        "PIZZA": "🍕", "PUZZLE": "🧩", "RABBIT": "🐰", "RACCOON": "🦝",
+        "RAINBOW": "🌈", "ROCKET": "🚀", "SHARK": "🦈", "SHRIMP": "🦐",
+        "SNAIL": "🐌", "SNAKE": "🐍", "SPIDER": "🕷️", "SUN": "☀️",
+        "SUSHI": "🍣", "SWAN": "🦢", "TENT": "⛺", "TIGER": "🐯",
+        "TORNADO": "🌪️", "TRAIN": "🚆", "TRUCK": "🚚", "TRUMPET": "🎺",
+        "TURTLE": "🐢", "WHALE": "🐳", "ZEBRA": "🦓"
+      };
+
+      const TITLES = [
+        "Warm-Up", "First Serve", "Rally Time", "Smash Hit",
+        "Net Play", "Top Spin", "Match Point", "Grand Slam",
+        "Fast Break", "Full Court", "Overtime", "Championship"
+      ];
+
+      const DIFFICULTIES = {
+        easy:   { title: "Easy",   solveChance: 0.45, mistakeChance: 0.16, knownFraction: 0.45 },
+        normal: { title: "Normal", solveChance: 0.65, mistakeChance: 0.10, knownFraction: 0.65 },
+        hard:   { title: "Hard",   solveChance: 0.85, mistakeChance: 0.06, knownFraction: 0.85 }
+      };
+
+      const LETTER_BAG = (() => {
+        const weights = [
+          ["E", 12], ["A", 9], ["I", 9], ["O", 8], ["N", 6], ["R", 6],
+          ["T", 6], ["L", 4], ["S", 4], ["U", 4], ["D", 4], ["G", 3],
+          ["B", 2], ["C", 2], ["M", 2], ["P", 2], ["F", 2], ["H", 2],
+          ["V", 2], ["W", 2], ["Y", 2], ["K", 1], ["J", 1], ["X", 1],
+          ["Q", 1], ["Z", 1]
+        ];
+        const bag = [];
+        for (const [letter, n] of weights) for (let i = 0; i < n; i++) bag.push(letter);
+        return bag;
+      })();
+
+      const COLS = 8, ROWS = 12, NCELLS = COLS * ROWS;
+      const TURN_SECONDS = 60, RACK_SIZE = 5;
+      const MAX_SWAPS = 2, MAX_HINTS = 3;
+
+      const rand = (n) => Math.floor(Math.random() * n);
+      const pick = (arr) => arr[rand(arr.length)];
+      function shuffle(a) {
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = rand(i + 1);
+          const t = a[i]; a[i] = a[j]; a[j] = t;
+        }
+        return a;
+      }
+
+      /* ================= Puzzle generator (port of PuzzleGenerator.swift) ================= */
+      function canPlace(grid, word, r, c, across) {
+        const dr = across ? 0 : 1, dc = across ? 1 : 0;
+        if (across && c === 0) return -1;
+        if (!across && r === 0) return -1;
+        const cells = [];
+        let crossings = 0;
+        for (let i = 0; i < word.length; i++) {
+          const rr = r + dr * i, cc = c + dc * i;
+          if (rr < 0 || rr >= ROWS || cc < 0 || cc >= COLS) return -1;
+          const g = grid[rr * COLS + cc];
+          if (g === "#") return -1;
+          if (g !== null && g !== word[i]) return -1;
+          if (g === word[i]) crossings++;
+          cells.push(rr * COLS + cc);
+        }
+        const qr = across ? r : r - 1, qc = across ? c - 1 : c;
+        const q = grid[qr * COLS + qc];
+        if (q !== null && q !== "#") return -1;
+        for (const idx of cells) {
+          if (grid[idx] !== null) continue;
+          const rr = Math.floor(idx / COLS), cc = idx % COLS;
+          if (across) {
+            for (const nr of [rr - 1, rr + 1]) {
+              if (nr >= 0 && nr < ROWS) {
+                const n = grid[nr * COLS + cc];
+                if (n !== null && n !== "#") return -1;
+              }
+            }
+          } else {
+            for (const nc of [cc - 1, cc + 1]) {
+              if (nc >= 0 && nc < COLS) {
+                const n = grid[rr * COLS + nc];
+                if (n !== null && n !== "#") return -1;
+              }
+            }
+          }
+        }
+        const br = r - dr, bc = c - dc;
+        if (br >= 0 && br < ROWS && bc >= 0 && bc < COLS) {
+          const b = grid[br * COLS + bc];
+          if (b !== null && b !== "#") return -1;
+        }
+        const er = r + dr * word.length, ec = c + dc * word.length;
+        if (er >= 0 && er < ROWS && ec >= 0 && ec < COLS) {
+          const e = grid[er * COLS + ec];
+          if (e !== null && e !== "#") return -1;
+        }
+        return crossings;
+      }
+
+      function doPlace(grid, word, r, c, across) {
+        for (let i = 0; i < word.length; i++) {
+          grid[(r + (across ? 0 : i)) * COLS + (c + (across ? i : 0))] = word[i];
+        }
+        grid[(across ? r : r - 1) * COLS + (across ? c - 1 : c)] = "#";
+      }
+
+      function buildOnce() {
+        const grid = new Array(NCELLS).fill(null);
+        const placed = [];
+        let pool = shuffle(WORDS.slice());
+
+        // Seed: longest word, across the middle of the board.
+        let seedIdx = 0;
+        for (let i = 1; i < pool.length; i++) {
+          if (pool[i].w.length > pool[seedIdx].w.length) seedIdx = i;
+        }
+        const seed = pool.splice(seedIdx, 1)[0];
+        const r0 = Math.floor(ROWS / 2);
+        const c0 = Math.max(1, Math.floor((COLS - seed.w.length) / 2));
+        if (canPlace(grid, seed.w, r0, c0, true) !== -1) {
+          doPlace(grid, seed.w, r0, c0, true);
+          placed.push({ word: seed.w, clue: seed.c, r: r0, c: c0, across: true });
+        }
+
+        // Greedy passes: place each word at its best crossing point.
+        for (let pass = 0; pass < 6; pass++) {
+          shuffle(pool);
+          let progress = false;
+          for (const cand of pool.slice()) {
+            let best = null;
+            for (const across of [true, false]) {
+              for (const p of placed) {
+                if (p.across === across) continue;
+                for (let j = 0; j < p.word.length; j++) {
+                  const jr = p.across ? p.r : p.r + j;
+                  const jc = p.across ? p.c + j : p.c;
+                  for (let i = 0; i < cand.w.length; i++) {
+                    if (cand.w[i] !== p.word[j]) continue;
+                    const rr = jr - (across ? 0 : i);
+                    const cc = jc - (across ? i : 0);
+                    const x = canPlace(grid, cand.w, rr, cc, across);
+                    if (x >= 1 && (best === null || x > best.crossings)) {
+                      best = { crossings: x, r: rr, c: cc, across };
+                    }
+                  }
+                }
+              }
+            }
+            if (best) {
+              doPlace(grid, cand.w, best.r, best.c, best.across);
+              placed.push({ word: cand.w, clue: cand.c, r: best.r, c: best.c, across: best.across });
+              pool = pool.filter((e) => e.w !== cand.w);
+              progress = true;
+            }
+          }
+          if (!progress) break;
+        }
+        return { grid, placed };
+      }
+
+      function generatePuzzle() {
+        let bestGrid = null, bestPlaced = [], bWords = -1, bLetters = -1;
+        for (let k = 0; k < 40; k++) {
+          const { grid, placed } = buildOnce();
+          const letters = grid.reduce((n, g) => n + (g !== null && g !== "#" ? 1 : 0), 0);
+          if (placed.length > bWords || (placed.length === bWords && letters > bLetters)) {
+            bWords = placed.length; bLetters = letters;
+            bestGrid = grid; bestPlaced = placed;
+          }
+        }
+        // Finalize into cells: "x" black, "c" clue, "l" letter.
+        const clueA = {}, clueD = {};
+        for (const p of bestPlaced) {
+          const qi = p.across ? p.r * COLS + (p.c - 1) : (p.r - 1) * COLS + p.c;
+          if (p.across) clueA[qi] = p.clue; else clueD[qi] = p.clue;
+        }
+        const cells = [];
+        const letterIdx = [];
+        for (let i = 0; i < NCELLS; i++) {
+          const g = bestGrid[i];
+          if (g === "#") cells.push({ k: "c", s: null, ca: clueA[i] || null, cd: clueD[i] || null, b: false });
+          else if (g !== null) { cells.push({ k: "l", s: g, ca: null, cd: null, b: false }); letterIdx.push(i); }
+          else cells.push({ k: "x", s: null, ca: null, cd: null, b: false });
+        }
+        // 3 blue bonus squares on random letter cells.
+        for (const i of shuffle(letterIdx.slice()).slice(0, 3)) cells[i].b = true;
+        const words = bestPlaced.map((p) => ({
+          a: p.word, r: p.r, c: p.c, d: p.across ? "across" : "down"
+        }));
+        return { title: pick(TITLES), cols: COLS, rows: ROWS, cells, words };
+      }
+
+      /* ================= Game state (port of GameViewModel.swift) ================= */
+      let G = null;          // active game state
+      let gameSeq = { id: 0 }; // token to cancel stale AI/timer callbacks
+      let nextPuzzleBox = { puzzle: null };
+
+      function drawTiles(n) {
+        const tiles = [];
+        for (let i = 0; i < n; i++) {
+          tiles.push({ id: ++drawTiles.seq, letter: pick(LETTER_BAG), used: false });
+        }
+        return tiles;
+      }
+      drawTiles.seq = 0;
+
+      function newGame(puzzle, diffKey) {
+        const diff = DIFFICULTIES[diffKey];
+        const n = puzzle.cells.length;
+        const wordCells = puzzle.words.map(() => []);
+        const cellWords = Array.from({ length: n }, () => []);
+        puzzle.words.forEach((w, wi) => {
+          for (let i = 0; i < w.a.length; i++) {
+            const idx = w.d === "across" ? w.r * COLS + (w.c + i) : (w.r + i) * COLS + w.c;
+            wordCells[wi].push(idx);
+            cellWords[idx].push(wi);
+          }
+        });
+        // The CPU "knows" a random subset of the words.
+        const order = shuffle(puzzle.words.map((_, i) => i));
+        const knownCount = Math.max(1, Math.ceil(puzzle.words.length * diff.knownFraction));
+        const aiKnown = new Set(order.slice(0, knownCount));
+
+        G = {
+          puzzle, diff, diffKey,
+          filled: new Array(n).fill(null),
+          filledBy: new Array(n).fill(null),
+          completedWords: new Set(),
+          wordCells, cellWords, aiKnown,
+          rack: [], selectedTileId: null,
+          scores: [0, 0], current: 0,
+          secondsLeft: TURN_SECONDS,
+          turnPlacements: 0, turnPoints: 0, blueHit: false,
+          turnCells: new Set(), turnBlueCells: new Set(), turnMoves: [],
+          swapsLeft: MAX_SWAPS, hintsUsed: 0,
+          lettersPlaced: [0, 0], wordsCompleted: [0, 0],
+          consecutiveEmptyTurns: 0,
+          aiBusy: false, gameOver: false, winner: null
+        };
+        dealRack();
+      }
+
+      const isLetterCell = (i) => G.puzzle.cells[i].k === "l";
+      const isBonus = (i) => G.puzzle.cells[i].b === true;
+      const solution = (i) => G.puzzle.cells[i].s || "";
+      const isAITurn = () => G.current === 1 && !G.gameOver;
+      const isHumanTurn = () => G.current === 0 && !G.gameOver;
+
+      function emptyLetterCells() {
+        const out = [];
+        for (let i = 0; i < G.filled.length; i++) {
+          if (isLetterCell(i) && G.filled[i] === null) out.push(i);
+        }
+        return out;
+      }
+      function isBoardFull() { return emptyLetterCells().length === 0; }
+      function remainingInWord(wi) {
+        return G.wordCells[wi].reduce((n, i) => n + (G.filled[i] === null ? 1 : 0), 0);
+      }
+
+      function dealRack() {
+        G.rack = drawTiles(RACK_SIZE);
+        G.selectedTileId = null;
+      }
+
+      /* ---------- Toast queue ---------- */
+      const toastQueue = [];
+      let toastShowing = false;
+      function showToast(text) {
+        toastQueue.push(text);
+        if (toastQueue.length > 3) toastQueue.splice(0, toastQueue.length - 3);
+        pumpToasts();
+      }
+      function pumpToasts() {
+        if (toastShowing || toastQueue.length === 0) return;
+        toastShowing = true;
+        const text = toastQueue.shift();
+        const el = document.createElement("div");
+        el.className = "toast";
+        el.textContent = text;
+        document.getElementById("toastWrap").appendChild(el);
+        setTimeout(() => {
+          el.remove();
+          toastShowing = false;
+          pumpToasts();
+        }, 1500);
+      }
+
+      /* ---------- Core placement ---------- */
+      function attemptPlace(tileId, cell) {
+        if (!G || G.gameOver) return;
+        if (!isLetterCell(cell) || G.filled[cell] !== null) return;
+        const ti = G.rack.findIndex((t) => t.id === tileId);
+        if (ti === -1 || G.rack[ti].used) return;
+        const letter = G.rack[ti].letter;
+        if (letter === solution(cell)) {
+          G.rack[ti].used = true;
+          if (G.selectedTileId === tileId) G.selectedTileId = null;
+          lockLetter(cell, true);
+          G.turnMoves.push({ cell, tileId });
+          G.turnCells.add(cell);
+          if (isBonus(cell)) G.turnBlueCells.add(cell);
+          renderAfterMove(cell);
+          if (isBoardFull()) endGame();
+        } else {
+          // Wrong square: the tile shakes and bounces back to the rack.
+          shakeTile(tileId);
+        }
+      }
+
+      function lockLetter(cell, countsTowardBonus) {
+        G.filled[cell] = solution(cell);
+        G.filledBy[cell] = G.current;
+        G.scores[G.current] += 1;
+        G.turnPoints += 1;
+        if (countsTowardBonus) {
+          G.turnPlacements += 1;
+          G.lettersPlaced[G.current] += 1;
+        }
+        if (isBonus(cell)) G.blueHit = true;
+        for (const wi of G.cellWords[cell]) {
+          if (!G.completedWords.has(wi) &&
+              G.wordCells[wi].every((i) => G.filled[i] !== null)) {
+            G.completedWords.add(wi);
+            const bonus = G.puzzle.words[wi].a.length;
+            G.scores[G.current] += bonus;
+            G.turnPoints += bonus;
+            G.wordsCompleted[G.current] += 1;
+            showToast("Word complete! +" + bonus);
+          }
+        }
+      }
+
+      function undoLast() {
+        if (!G || !isHumanTurn() || G.turnMoves.length === 0) return;
+        const last = G.turnMoves.pop();
+        const cell = last.cell;
+        const ti = G.rack.findIndex((t) => t.id === last.tileId);
+        if (ti !== -1) G.rack[ti].used = false;
+        if (G.selectedTileId === last.tileId) G.selectedTileId = null;
+        G.filled[cell] = null;
+        G.filledBy[cell] = null;
+        G.turnCells.delete(cell);
+        G.turnBlueCells.delete(cell);
+        G.blueHit = G.turnBlueCells.size > 0;
+        G.scores[G.current] = Math.max(0, G.scores[G.current] - 1);
+        G.turnPoints = Math.max(0, G.turnPoints - 1);
+        G.turnPlacements = Math.max(0, G.turnPlacements - 1);
+        G.lettersPlaced[G.current] = Math.max(0, G.lettersPlaced[G.current] - 1);
+        for (const wi of G.cellWords[cell]) {
+          if (G.completedWords.has(wi)) {
+            G.completedWords.delete(wi);
+            const bonus = G.puzzle.words[wi].a.length;
+            G.scores[G.current] = Math.max(0, G.scores[G.current] - bonus);
+            G.turnPoints = Math.max(0, G.turnPoints - bonus);
+            G.wordsCompleted[G.current] = Math.max(0, G.wordsCompleted[G.current] - 1);
+            showToast("Word un-completed −" + bonus);
+          }
+        }
+        renderAfterMove(cell);
+      }
+
+      function swapSelected() {
+        if (!G || !isHumanTurn() || G.swapsLeft <= 0 || G.selectedTileId === null) return;
+        const ti = G.rack.findIndex((t) => t.id === G.selectedTileId);
+        if (ti === -1 || G.rack[ti].used) return;
+        G.swapsLeft -= 1;
+        G.rack[ti] = { id: ++drawTiles.seq, letter: pick(LETTER_BAG), used: false };
+        G.selectedTileId = null;
+        showToast("Tile swapped!");
+        renderRack(); renderHud(); renderControls();
+      }
+
+      function useHint() {
+        if (!G || !isHumanTurn() || G.hintsUsed >= MAX_HINTS) return;
+        const empties = emptyLetterCells();
+        if (empties.length === 0) return;
+        G.hintsUsed += 1;
+        const cell = pick(empties);
+        lockLetter(cell, false);
+        showToast("Hint revealed!");
+        renderAfterMove(cell);
+        if (isBoardFull()) endGame();
+      }
+
+      /* ---------- Turn flow ---------- */
+      function endTurn() {
+        if (!G || G.gameOver) return;
+        stopTimer();
+        if (G.turnPlacements === RACK_SIZE) {
+          G.scores[G.current] += 5;
+          G.turnPoints += 5;
+          showToast("All 5 letters placed! +5");
+        }
+        if (G.blueHit && G.turnPoints > 0) {
+          G.scores[G.current] += G.turnPoints;
+          showToast("Blue square — turn score doubled!");
+        }
+        const empties = emptyLetterCells().length;
+        if (G.turnPlacements === 0) G.consecutiveEmptyTurns += 1;
+        else G.consecutiveEmptyTurns = 0;
+        const stalled = empties < 10 && G.consecutiveEmptyTurns >= 2;
+
+        G.turnPlacements = 0;
+        G.turnPoints = 0;
+        G.blueHit = false;
+        G.turnMoves = [];
+        G.turnCells = new Set();
+        G.turnBlueCells = new Set();
+        G.selectedTileId = null;
+
+        if (stalled) { endGame(); return; }
+
+        G.current = 1 - G.current;
+        dealRack();
+        renderAll();
+        startTimer();
+        if (isAITurn()) runAI();
+      }
+
+      function endGame() {
+        if (!G || G.gameOver) return;
+        stopTimer();
+        G.gameOver = true;
+        G.aiBusy = false;
+        G.winner = G.scores[0] > G.scores[1] ? 0 : (G.scores[1] > G.scores[0] ? 1 : null);
+        renderAll();
+        showGameOver();
+      }
+
+      /* ---------- Timer ---------- */
+      let timerId = null;
+      function startTimer() {
+        stopTimer();
+        G.secondsLeft = TURN_SECONDS;
+        renderTimer();
+        const token = gameSeq.id;
+        timerId = setInterval(() => {
+          if (token !== gameSeq.id || !G || G.gameOver) { stopTimer(); return; }
+          G.secondsLeft -= 1;
+          renderTimer();
+          if (G.secondsLeft <= 0) endTurn();
+        }, 1000);
+      }
+      function stopTimer() {
+        if (timerId !== null) { clearInterval(timerId); timerId = null; }
+      }
+
+      /* ---------- CPU opponent (port of runAI / executeAIMoves) ---------- */
+      function runAI() {
+        G.aiBusy = true;
+        renderAll();
+        const d = G.diff;
+        const moves = [];
+        G.rack.forEach((tile, ti) => {
+          let target = null;
+          if (Math.random() < d.solveChance) {
+            const cands = [];
+            for (let i = 0; i < G.filled.length; i++) {
+              if (isLetterCell(i) && G.filled[i] === null && solution(i) === tile.letter &&
+                  G.cellWords[i].some((wi) => G.aiKnown.has(wi))) {
+                cands.push(i);
+              }
+            }
+            // Prefer cells in nearly-finished words.
+            cands.sort((a, b) => {
+              const ra = Math.min(...G.cellWords[a].map(remainingInWord), 99);
+              const rb = Math.min(...G.cellWords[b].map(remainingInWord), 99);
+              return ra - rb;
+            });
+            target = cands.length ? cands[0] : null;
+          } else if (Math.random() < d.mistakeChance) {
+            const wrong = [];
+            for (let i = 0; i < G.filled.length; i++) {
+              if (isLetterCell(i) && G.filled[i] === null && solution(i) !== tile.letter) wrong.push(i);
+            }
+            target = wrong.length ? pick(wrong) : null;
+          }
+          moves.push({ tileIndex: ti, cell: target });
+        });
+        executeAIMoves(moves, 0);
+      }
+
+      function executeAIMoves(moves, index) {
+        const token = gameSeq.id;
+        if (!G || G.gameOver || !isAITurn()) { if (G) { G.aiBusy = false; renderAll(); } return; }
+        if (index >= moves.length) {
+          setTimeout(() => {
+            if (token !== gameSeq.id || !G) return;
+            G.aiBusy = false;
+            endTurn();
+          }, 700);
+          return;
+        }
+        const m = moves[index];
+        if (m.cell !== null && m.tileIndex < G.rack.length) {
+          attemptPlace(G.rack[m.tileIndex].id, m.cell);
+        }
+        setTimeout(() => {
+          if (token !== gameSeq.id) return;
+          executeAIMoves(moves, index + 1);
+        }, 850);
+      }
+
+      /* ================= Rendering ================= */
+      const $ = (id) => document.getElementById(id);
+      const boardEl = $("board"), rackEl = $("rack");
+      let cellEls = [];
+
+      /* Words whose clue lives in clue cell i (across word starts one cell
+         right, down word one cell below) — port of cluedWords in the app. */
+      function cluedWords(i) {
+        const r = Math.floor(i / COLS), c = i % COLS;
+        return G.puzzle.words.filter((w) =>
+          (w.d === "across" && w.r === r && w.c === c + 1) ||
+          (w.d === "down" && w.r === r + 1 && w.c === c));
+      }
+
+      /* Emoji for this clue cell when one of its words has a picture clue. */
+      function pictureEmojiForClue(i) {
+        for (const w of cluedWords(i)) {
+          const e = PICTURE_EMOJI[w.a];
+          if (e) return e;
+        }
+        return null;
+      }
+
+      function buildBoard() {
+        boardEl.innerHTML = "";
+        cellEls = [];
+        G.puzzle.cells.forEach((cell, i) => {
+          let el;
+          if (cell.k === "x") {
+            el = document.createElement("div");
+            el.className = "cell black";
+          } else if (cell.k === "c") {
+            el = document.createElement("button");
+            el.type = "button";
+            el.className = "cell clue";
+            const arrow = document.createElement("span");
+            arrow.className = "arrow";
+            arrow.textContent = cell.ca && cell.cd ? "→↓" : (cell.ca ? "→" : "↓");
+            el.appendChild(arrow);
+            const emoji = pictureEmojiForClue(i);
+            if (emoji) {
+              // Picture clue: show the emoji big instead of the clue text.
+              // Tapping still opens the popup with the full clue text.
+              el.classList.add("has-pic");
+              const pic = document.createElement("span");
+              pic.className = "pic";
+              pic.textContent = emoji;
+              el.appendChild(pic);
+              el.setAttribute("aria-label", "Picture clue: " + clueText(i));
+            } else {
+              const txt = document.createElement("span");
+              txt.className = "ctext";
+              txt.textContent = (cell.ca || cell.cd || "").slice(0, 24);
+              el.appendChild(txt);
+              el.setAttribute("aria-label", "Clue: " + clueText(i));
+            }
+            el.addEventListener("click", () => openClue(i));
+          } else {
+            el = document.createElement("button");
+            el.type = "button";
+            el.className = "cell letter empty" + (cell.b ? " bonus" : "");
+            el.setAttribute("aria-label", cell.b ? "Empty bonus square" : "Empty square");
+            el.addEventListener("click", () => onCellTap(i));
+          }
+          boardEl.appendChild(el);
+          cellEls.push(el);
+        });
+        fitBoard();
+      }
+
+      function clueText(i) {
+        const cell = G.puzzle.cells[i];
+        const parts = [];
+        if (cell.ca) parts.push("→ " + cell.ca);
+        if (cell.cd) parts.push("↓ " + cell.cd);
+        return parts.join("\n");
+      }
+
+      function updateCell(i) {
+        const el = cellEls[i];
+        if (!el || G.puzzle.cells[i].k !== "l") return;
+        const letter = G.filled[i];
+        el.innerHTML = "";
+        el.classList.remove("filled", "by-you", "by-cpu");
+        if (letter !== null) {
+          el.classList.add("filled", G.filledBy[i] === 0 ? "by-you" : "by-cpu");
+          el.classList.remove("empty");
+          const glyph = document.createElement("span");
+          glyph.className = "glyph";
+          glyph.textContent = letter;
+          el.appendChild(glyph);
+          el.setAttribute("aria-label", "Filled: " + letter);
+          if (G.turnCells.has(i)) {
+            const dot = document.createElement("span");
+            dot.className = "turndot";
+            el.appendChild(dot);
+          }
+        } else {
+          el.classList.add("empty");
+          el.setAttribute("aria-label", G.puzzle.cells[i].b ? "Empty bonus square" : "Empty square");
+        }
+      }
+
+      function renderBoard(popCell) {
+        for (let i = 0; i < NCELLS; i++) {
+          if (G.puzzle.cells[i].k === "l") updateCell(i);
+        }
+        boardEl.classList.toggle("has-selection", isHumanTurn() && G.selectedTileId !== null);
+        if (popCell !== undefined && popCell !== null && cellEls[popCell]) {
+          const glyph = cellEls[popCell].querySelector(".glyph");
+          if (glyph) glyph.classList.add("pop");
+        }
+      }
+
+      function renderRack() {
+        rackEl.innerHTML = "";
+        const human = isHumanTurn();
+        G.rack.forEach((tile) => {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "tile" + (tile.used ? " used" : "") +
+            (G.selectedTileId === tile.id ? " selected" : "");
+          b.textContent = tile.letter;
+          b.dataset.tileId = String(tile.id);
+          b.disabled = !human || tile.used;
+          b.setAttribute("aria-label", "Tile " + tile.letter);
+          b.setAttribute("aria-pressed", G.selectedTileId === tile.id ? "true" : "false");
+          b.addEventListener("click", () => onTileTap(tile.id));
+          rackEl.appendChild(b);
+        });
+      }
+
+      function renderHud() {
+        $("puzzleTitle").textContent = G.puzzle.title;
+        $("ptsYou").textContent = G.scores[0];
+        $("ptsCpu").textContent = G.scores[1];
+        $("scoreYou").classList.toggle("active-you", !G.gameOver && G.current === 0);
+        $("scoreCpu").classList.toggle("active-cpu", !G.gameOver && G.current === 1);
+        $("turnPts").innerHTML = "Turn <b>+" + G.turnPoints + "</b>";
+        const status = $("statusLine");
+        if (G.gameOver) status.textContent = "Game over";
+        else if (isAITurn()) { status.innerHTML = '<span class="thinking">CPU is thinking</span>'; }
+        else status.textContent = G.selectedTileId !== null
+          ? "Now tap a square to place the tile"
+          : "Your turn — tap a tile, then a square";
+      }
+
+      function renderTimer() {
+        if (!G) return;
+        const num = $("timerNum");
+        num.textContent = Math.max(0, G.secondsLeft);
+        num.classList.toggle("low", G.secondsLeft <= 10 && !G.gameOver);
+        const fill = $("timerFill");
+        fill.style.width = (Math.max(0, G.secondsLeft) / TURN_SECONDS * 100) + "%";
+        fill.classList.toggle("low", G.secondsLeft <= 10 && !G.gameOver);
+      }
+
+      function renderControls() {
+        const human = isHumanTurn();
+        $("endTurnBtn").disabled = !human;
+        $("undoBtn").disabled = !human || G.turnMoves.length === 0;
+        $("swapBtn").disabled = !human || G.swapsLeft <= 0 || G.selectedTileId === null;
+        $("hintBtn").disabled = !human || G.hintsUsed >= MAX_HINTS;
+        $("swapCount").textContent = G.swapsLeft;
+        $("hintCount").textContent = MAX_HINTS - G.hintsUsed;
+      }
+
+      function renderAll() {
+        renderHud(); renderBoard(null); renderRack(); renderTimer(); renderControls();
+      }
+      function renderAfterMove(cell) {
+        renderHud(); renderBoard(cell); renderRack(); renderControls();
+      }
+
+      function shakeTile(tileId) {
+        const el = rackEl.querySelector('[data-tile-id="' + tileId + '"]');
+        if (!el) return;
+        el.classList.remove("shake");
+        void el.offsetWidth;
+        el.classList.add("shake");
+      }
+
+      function fitBoard() {
+        const w = boardEl.clientWidth;
+        if (w > 0) boardEl.style.setProperty("--cell", ((w - 7 * 3) / 8) + "px");
+      }
+      window.addEventListener("resize", fitBoard);
+
+      /* ================= Input ================= */
+      function onTileTap(tileId) {
+        if (!G || !isHumanTurn()) return;
+        const tile = G.rack.find((t) => t.id === tileId);
+        if (!tile || tile.used) return;
+        G.selectedTileId = G.selectedTileId === tileId ? null : tileId;
+        renderRack(); renderHud(); renderControls();
+        boardEl.classList.toggle("has-selection", G.selectedTileId !== null);
+      }
+
+      function onCellTap(i) {
+        if (!G || !isHumanTurn() || G.selectedTileId === null) return;
+        attemptPlace(G.selectedTileId, i);
+      }
+
+      document.addEventListener("keydown", (e) => {
+        if (!G || G.gameOver || $("gameScreen").hidden) return;
+        if (!$("clueModal").hidden || !$("overModal").hidden) return;
+        if (!isHumanTurn()) return;
+        if (/^[a-zA-Z]$/.test(e.key)) {
+          const letter = e.key.toUpperCase();
+          const tile = G.rack.find((t) => !t.used && t.letter === letter);
+          if (tile) onTileTap(tile.id);
+        } else if (e.key === "Backspace") {
+          e.preventDefault(); undoLast();
+        } else if (e.key === "Enter") {
+          e.preventDefault(); endTurn();
+        } else if (e.key === "Escape") {
+          G.selectedTileId = null; renderRack(); renderHud(); renderControls();
+          boardEl.classList.remove("has-selection");
+        }
+      });
+
+      /* ================= Clue popup & game over ================= */
+      function openClue(i) {
+        $("clueModalText").textContent = clueText(i);
+        $("clueModal").hidden = false;
+      }
+      $("clueCloseBtn").addEventListener("click", () => { $("clueModal").hidden = true; });
+      $("clueModal").addEventListener("click", (e) => {
+        if (e.target === $("clueModal")) $("clueModal").hidden = true;
+      });
+
+      function showGameOver() {
+        const t = $("overTitle");
+        if (G.winner === 0) { t.textContent = "You win!"; t.className = "winner-you"; }
+        else if (G.winner === 1) { t.textContent = "CPU wins"; t.className = "winner-cpu"; }
+        else { t.textContent = "It's a tie!"; t.className = ""; }
+        $("finalYou").textContent = G.scores[0];
+        $("finalCpu").textContent = G.scores[1];
+        $("statWordsYou").textContent = G.wordsCompleted[0];
+        $("statWordsCpu").textContent = G.wordsCompleted[1];
+        $("statLettersYou").textContent = G.lettersPlaced[0];
+        $("statLettersCpu").textContent = G.lettersPlaced[1];
+        setTimeout(() => { $("overModal").hidden = false; }, 650);
+      }
+
+      /* ================= Game lifecycle ================= */
+      let currentDiff = "normal";
+
+      function prefetchPuzzle() {
+        setTimeout(() => {
+          if (!nextPuzzleBox.puzzle) nextPuzzleBox.puzzle = generatePuzzle();
+        }, 900);
+      }
+
+      function startGame() {
+        gameSeq.id += 1;
+        stopTimer();
+        toastQueue.length = 0;
+        const puzzle = nextPuzzleBox.puzzle || generatePuzzle();
+        nextPuzzleBox.puzzle = null;
+        newGame(puzzle, currentDiff);
+        $("overModal").hidden = true;
+        $("clueModal").hidden = true;
+        $("startScreen").hidden = true;
+        $("gameScreen").hidden = false;
+        buildBoard();
+        renderAll();
+        startTimer();
+        prefetchPuzzle();
+        window.scrollTo(0, 0);
+      }
+
+      document.querySelectorAll(".diff-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          currentDiff = btn.dataset.diff;
+          document.querySelectorAll(".diff-btn").forEach((b) =>
+            b.setAttribute("aria-pressed", b === btn ? "true" : "false"));
+        });
+      });
+      $("playBtn").addEventListener("click", startGame);
+      $("playAgainBtn").addEventListener("click", startGame);
+      $("menuBtn").addEventListener("click", () => {
+        gameSeq.id += 1;
+        stopTimer();
+        G = null;
+        $("overModal").hidden = true;
+        $("gameScreen").hidden = true;
+        $("startScreen").hidden = false;
+      });
+      $("endTurnBtn").addEventListener("click", () => { if (isHumanTurn()) endTurn(); });
+      $("undoBtn").addEventListener("click", undoLast);
+      $("swapBtn").addEventListener("click", swapSelected);
+      $("hintBtn").addEventListener("click", useHint);
+
+      // Warm up the first puzzle so Play feels instant.
+      setTimeout(() => {
+        nextPuzzleBox.puzzle = generatePuzzle();
+        $("freshNote").textContent = "A fresh puzzle is generated for every game.";
+      }, 350);
+    </script>
+  </body>
+</html>
