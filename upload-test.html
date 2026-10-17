@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<body>
+<input type="file" id="f">
+<div id="s">waiting for file</div>
+<script>
+var f=document.getElementById('f'),s=document.getElementById('s');
+f.addEventListener('change',function(){
+var r=new FileReader();
+r.onload=function(){
+var t=document.createElement('textarea');
+t.value=r.result;document.body.appendChild(t);t.select();
+var ok=false;try{ok=document.execCommand('copy');}catch(e){}
+document.body.removeChild(t);
+s.textContent='copied='+ok+' len='+r.result.length;
+document.title=s.textContent;
+};
+r.readAsText(f.files[0]);
+});
+</script>
+</body>
+</html>
